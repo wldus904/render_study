@@ -23,19 +23,19 @@ class Items extends Component {
   }
 
   setEvent() {
-    this.$target.addEventListener("click", ({ target }) => {
+    this.addEvent('click', '.add', ({target}) => {
       const items = [...this.state.items];
-
-      if (target.classList.contains("add")) {
-        let num = this.state.items[this.state.items.length - 1]
+      let num = this.state.items[this.state.items.length - 1]
           ? this.state.items[this.state.items.length - 1]
           : 0;
         num++;
         items.push(num);
-      } else if (target.classList.contains("remove")) {
-        items.splice(target.dataset.idx, 1);
-      }
+        this.setState({ items: items });
+    });
 
+    this.addEvent('click', '.remove', ({target}) => {
+      const items = [...this.state.items];
+      items.splice(target.dataset.idx, 1);
       this.setState({ items: items });
     });
   }
