@@ -1,42 +1,39 @@
 import Component from "../lib/Component.js";
 
 class Items extends Component {
-  // 초기 state에 넣을 값
-  setup() {
-    this.state = { items: [1, 2, 3] };
-  }
-
   // 화면에 보여질 element 작성
   template() {
-    const { items } = this.state;
-
+    const { filteredItems } = this.$props;
     return `
-        <ul>
-            ${items
-              .map((item, idx) => {
-                return `<li>${item}</li><button type="button" class="remove" data-idx="${idx}">삭제</button>`;
-              })
-              .join("")}
-        </ul>
-        <button type="button" class="add">추가</button>
+        ${filteredItems
+          .map(({ contents, seq, active }) => {
+            return `<li data-seq="${seq}">
+                      ${contents}
+                      <button class="toggleBtn" style="color: ${
+                        active ? "#09F" : "#F09"
+                      }">
+                        ${active ? "활성" : "비활성"}
+                      </button>
+                      <button type="button" class="remove"">
+                        삭제
+                      </button>
+                    </li>`;
+          })
+          .join("")}
     `;
   }
 
   setEvent() {
-    this.addEvent('click', '.add', ({target}) => {
-      const items = [...this.state.items];
-      let num = this.state.items[this.state.items.length - 1]
-          ? this.state.items[this.state.items.length - 1]
-          : 0;
-        num++;
-        items.push(num);
-        this.setState({ items: items });
+    const { deleteItem, toggleItem } = this.$props;
+
+    this.addEvent("click", ".remove", ({ target }) => {
+      const seq = Number(target.closest("[data-seq]").dataset.seq);
+      deleteItem(seq);
     });
 
-    this.addEvent('click', '.remove', ({target}) => {
-      const items = [...this.state.items];
-      items.splice(target.dataset.idx, 1);
-      this.setState({ items: items });
+    this.addEvent("click", ".toggleBtn", ({ target }) => {
+      const seq = Number(target.closest("[data-seq]").dataset.seq);
+      toggleItem(seq);
     });
   }
 }
